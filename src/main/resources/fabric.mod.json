@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "miningdropper",
+  "version": "1.2.3",
+  "name": "Mining Dropper",
+  "description": "Drop selected mining blocks and automatically compact kept mining materials when opening a crafting table.",
+  "environment": "client",
+  "mixins": ["miningdropper.mixins.json"],
+  "entrypoints": {
+    "client": ["net.ponti.miningdropper.MiningDropper"],
+    "modmenu": ["net.ponti.miningdropper.ModMenuIntegration"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.5",
+    "minecraft": "26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  },
+  "suggests": { "modmenu": "*" }
+}

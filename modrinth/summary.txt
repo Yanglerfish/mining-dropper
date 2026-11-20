@@ -1,0 +1,1 @@
+Automatically drop selected mining blocks and compact kept materials when you open a crafting table. Per-material controls for Minecraft Java 26.3 on Fabric.

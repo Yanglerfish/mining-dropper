@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "net.ponti.miningdropper.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": ["CraftingSyncMixin"],
+  "injectors": { "defaultRequire": 1 }
+}
