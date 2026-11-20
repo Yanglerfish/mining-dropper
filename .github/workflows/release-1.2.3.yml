@@ -1,0 +1,38 @@
+name: Publish Mining Dropper 1.2.3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release-1.2.3.yml'
+      - 'release/MiningDropper-1.2.3-mc26.3.jar'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mining-dropper-release-1.2.3
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Verify and publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          jar=MiningDropper-1.2.3-mc26.3.jar
+          digest=f1d99908ef8e608bd9cf61f967d19a91c78ae6874a586a167db0c1e8a71c418d
+          echo "$digest  release/$jar" | sha256sum --check --strict
+          if ! gh release view v1.2.3 --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create v1.2.3 "release/$jar" --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" --title 'Mining Dropper 1.2.3 for Minecraft 26.3' \
+              --notes-file release/notes.md
+          fi
+          gh release download v1.2.3 --repo "$GITHUB_REPOSITORY" --pattern "$jar" --dir "$RUNNER_TEMP"
+          echo "$digest  $RUNNER_TEMP/$jar" | sha256sum --check --strict
