@@ -1,0 +1,43 @@
+name: Submit to Modrinth
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/modrinth.yml'
+      - 'modrinth/submit.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: modrinth-mining-dropper-1.2.3
+
+jobs:
+  modrinth:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Check Minecraft version, dependency IDs, and release file
+        run: python3 modrinth/submit.py --check
+      - name: Check publishing authorization
+        id: authorization
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: |
+          if [[ -n "$MODRINTH_TOKEN" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Modrinth upload is pending. Add the MODRINTH_TOKEN repository secret and rerun this workflow."
+          fi
+      - name: Upload release, apply AI disclosures, and submit for unlisted review
+        if: steps.authorization.outputs.available == 'true'
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: python3 modrinth/submit.py
